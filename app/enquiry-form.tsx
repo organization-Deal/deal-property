@@ -103,7 +103,7 @@ export function EnquiryForm({ initial = {} }: {
     <button className="text-button" onClick={() => { requestId.current = null; setStatus('idle'); setError(''); setCopied(false); }}>{translate("ส่งคำขอเรื่องอื่น")}</button>
   </div>;
     return <form className="enquiry-form enquiry-form-v2" onSubmit={submit} aria-busy={status === 'pending'}>
-      <div className="form-project"><span className="small-red-dot"/><span>{translate('HUMAN ALLOWED · เชียงใหม่')}</span></div>
+      <div className="form-project"><span className="small-red-dot"/><span>{translate(PROJECT.name)}</span></div>
       <p className="form-intro">{translate('กรอกข้อมูลเพื่อติดต่อทีม DEAL! ไม่มีการชำระเงินในขั้นตอนนี้')}</p>
       <fieldset disabled={status === 'pending'} className="enquiry-fields">
         <section className="enquiry-group" aria-labelledby={`${uid}-contact-heading`}>

@@ -388,6 +388,7 @@
 #projects .section-title h2,.catalog-head h1{font-size:30px;line-height:1.4;letter-spacing:-.4px;margin:0}
 #projects .project-count,.catalog-head>p.project-count{font-size:14px;line-height:1.6;color:#626a5c;margin:6px 0 0}
 #projects .section-title>.text-link{flex-shrink:0;margin:0;font-size:14px;padding:10px 16px;min-height:44px}
+.project-heading-row>div:first-child{min-width:0;flex:1}.project-heading-row h1{white-space:normal;overflow-wrap:break-word}.project-heading-row{flex-wrap:wrap;gap:16px}.card-title-row h3{overflow-wrap:break-word}
 #care .section-title{display:block;margin-bottom:20px}
 #care .section-title h2{margin:0;font-size:28px;line-height:1.4}
 #care .care-grid{border-top:0}
@@ -396,7 +397,6 @@
 @media(min-width:1024px){
  #care .care-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
  #care .care-item{flex-direction:column;gap:14px;padding:20px}
- #care .care-item-top{flex-basis:auto;width:38px}
  #care .care-item-copy{min-width:0}
  .catalog-head h1{font-size:32px}
 }

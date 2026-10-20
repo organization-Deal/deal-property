@@ -1,5 +1,5 @@
 export const PROJECT = {
-  name: 'Human Allowed',
+  name: 'Human Allowed Rimping',
   path: '/projects/human-allowed-chiang-mai',
   fullPrice: 1712000,
   startingPrice: 171200,
