@@ -4,8 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import { PROJECT } from '../lib/project';
 import { ChevronLeft, ChevronRight, Expand, MapPin, X } from 'lucide-react';
 const photos = [
-    { id: '2456', alt: 'อาคารบ้านพัก Human Allowed (2) และบันไดภายนอกระหว่างก่อสร้าง' },
-    { id: '2451', alt: 'แนวบ้านพักและหลังคา Human Allowed (2)' },
+    { id: '2456', alt: 'อาคารบ้านพัก Human Alloewd Airpod Chiangmai และบันไดภายนอกระหว่างก่อสร้าง' },
+    { id: '2451', alt: 'แนวบ้านพักและหลังคา Human Alloewd Airpod Chiangmai' },
     { id: '2452', alt: 'รายละเอียดระเบียงและผนังภายนอกบ้านพัก' },
     { id: '2454', alt: 'ทีมช่างทำงานบริเวณผนังภายนอกและนั่งร้าน' },
     { id: '2453', alt: 'การทำงานบริเวณทางเดินด้านข้างอาคาร' },
@@ -21,8 +21,8 @@ const completedPhotos = [
     { id: '2677', alt: 'พื้นที่พักผ่อนและอ่านหนังสือภายในบ้านพัก' },
 ];
 const projects = [
-    { title: 'Human Around (1)', label: 'โครงการแรกของ DEAL!', status: 'สร้างเสร็จแล้ว', detail: 'เปิดดำเนินงานและมีรายได้แล้ว', note: 'ภาพจริงของบ้านและบรรยากาศภายใน', prefix: 'completed', photos: completedPhotos },
-    { title: 'Human Allowed (2)', label: 'อำเภอเมืองเชียงใหม่', status: 'ปิดรับการเป็นเจ้าของแล้ว', detail: 'อยู่ระหว่างก่อสร้าง', note: 'ภาพหน้างานจริง · ชุดบันทึก Day 37/45', prefix: 'construction', photos },
+    { title: 'Human Alloewd Chiangmai Gate', label: 'โครงการแรกของ DEAL!', status: 'สร้างเสร็จแล้ว', detail: 'เปิดดำเนินงานและมีรายได้แล้ว', note: 'ภาพจริงของบ้านและบรรยากาศภายใน', prefix: 'completed', photos: completedPhotos },
+    { title: 'Human Alloewd Airpod Chiangmai', label: 'อำเภอเมืองเชียงใหม่', status: 'ปิดรับการเป็นเจ้าของแล้ว', detail: 'อยู่ระหว่างก่อสร้าง', note: 'ภาพหน้างานจริง · ชุดบันทึก Day 37/45', prefix: 'construction', photos },
 ];
 export function ConstructionProjects({ compact = false }: {
     compact?: boolean;

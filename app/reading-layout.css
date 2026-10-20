@@ -21,7 +21,7 @@
 #care .section-side{font-size:13px;margin:0}
 #care .care-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 #care .care-item{display:flex;align-items:flex-start;gap:12px;padding:18px;margin:0;border:1px solid #dfe3d9;border-radius:14px;background:#fff}
-#care .care-item-top{display:grid;place-items:center;flex:0 0 auto;width:38px;height:38px;min-width:38px;min-height:38px;aspect-ratio:1;margin:0;background:#f1f3ed;border-radius:10px;color:#555f4b}
+#care .care-item-top{display:flex;align-items:center;justify-content:center;flex:0 0 auto;width:38px;height:38px;min-width:38px;min-height:38px;aspect-ratio:1;margin:0;background:#f1f3ed;border-radius:10px;color:#555f4b}
 #care .care-item-top svg{display:block;width:22px;height:22px;flex:none;stroke-width:1.6}
 #care .care-item h3{font-size:16px;line-height:1.5;margin:0 0 5px}
 #care .care-item p{font-size:13px;line-height:1.7;margin:0;color:#646c5c}
