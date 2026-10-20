@@ -1,0 +1,34 @@
+#about.about-explained{padding-block:48px;background:#252c24;color:#f5f6f1}
+.about-introduction{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;margin-bottom:28px}
+#about.about-explained h2{font-size:32px;line-height:1.45;letter-spacing:-.4px;margin:0}
+#about.about-explained h2 span{color:#c1cbb6}
+.about-definition{font-size:16px;line-height:1.85;color:#d2d8cd;margin:0;max-width:62ch}
+.about-explanation-grid{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:32px;align-items:stretch}
+.about-project-photo{position:relative;margin:0;overflow:hidden;border-radius:16px;min-height:340px;background:#3c4538}
+.about-project-photo>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 45%}
+.about-project-photo:after{content:'';position:absolute;inset:35% 0 0;background:linear-gradient(transparent,#10190fe8)}
+.about-project-photo figcaption{position:absolute;z-index:1;left:22px;bottom:22px;right:22px;display:grid;gap:4px;color:#fff}
+.about-project-photo figcaption span{font-size:13px;line-height:1.6}
+.about-project-photo figcaption strong{font-size:24px;font-weight:500;line-height:1.4}
+.about-roles{padding:22px 24px;border:1px solid #ffffff24;border-radius:16px;background:#ffffff04}
+.about-roles>h3{font-size:19px;margin:0 0 16px;line-height:1.5}
+.about-roles article{display:flex;align-items:flex-start;gap:14px;padding-block:16px;border-top:1px solid #ffffff20}
+.about-roles article:last-child{padding-bottom:0}
+.about-role-icon{display:grid;place-items:center;width:38px;height:38px;flex:0 0 38px;border-radius:10px;background:#ffffff0e;color:#cbd5bf}
+.about-roles h4{font-size:17px;font-weight:500;line-height:1.5;margin:0 0 5px}
+.about-roles p{font-size:14px;line-height:1.8;color:#cbd2c5;margin:0}
+.about-income{margin-top:26px;padding:22px 24px;background:#f1f3eb;color:#273025;border-radius:16px}
+.about-income-heading{display:flex;align-items:baseline;justify-content:space-between;gap:8px 20px;flex-wrap:wrap;margin-bottom:18px}
+.about-income-heading h3{font-size:19px;line-height:1.4;margin:0}
+.about-income-heading>span{font-size:12px;color:#656e5d}
+.about-income-steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.about-income-steps li{display:flex;align-items:flex-start;gap:10px;min-width:0}
+.about-income-steps li+li{border-left:1px solid #d2d9c9;padding-left:20px}
+.about-income-steps li>span{font-size:12px;line-height:24px;color:#9f2926;font-variant-numeric:tabular-nums}
+.about-income-steps p{font-size:15px;font-weight:500;line-height:1.6;margin:0}
+.about-income-note{font-size:12px;line-height:1.7;margin:18px 0 0;padding-top:14px;border-top:1px solid #d2d9c9;color:#5e6857}
+.about-next{display:flex;align-items:center;gap:24px;flex-wrap:wrap;margin-top:22px}
+.about-next>.btn{min-height:46px;padding:11px 18px;font-size:14px;border-radius:10px;gap:12px}
+.about-proof-link{display:inline-flex;align-items:center;gap:8px;min-height:44px;font-size:14px;color:#e0e6d9;text-decoration:underline;text-underline-offset:5px}
+@media(max-width:900px){.about-introduction{grid-template-columns:1fr;gap:14px}.about-explanation-grid{grid-template-columns:1fr;gap:18px}.about-project-photo{min-height:260px;max-height:320px;aspect-ratio:16/9}.about-roles{padding:20px}.about-definition{font-size:15px;max-width:none}}
+@media(max-width:600px){#about.about-explained{padding-block:32px}#about.about-explained h2{font-size:27px}.about-introduction{margin-bottom:20px}.about-project-photo{min-height:220px}.about-project-photo figcaption{left:16px;bottom:16px}.about-project-photo figcaption strong{font-size:21px}.about-roles{padding:18px 16px}.about-roles h4{font-size:16px}.about-roles article{gap:12px}.about-income{padding:18px 16px;margin-top:18px}.about-income-steps{grid-template-columns:1fr;gap:12px}.about-income-steps li+li{border-left:0;padding-left:0}.about-income-heading{margin-bottom:14px}.about-income-note{margin-top:14px}.about-next{gap:10px}.about-next>.btn{width:100%}.about-proof-link{width:100%;justify-content:center}}

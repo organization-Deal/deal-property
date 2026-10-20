@@ -1,0 +1,44 @@
+/* Contact form: visible groups, two columns on desktop, one on phones. */
+#contact.contact-reference{background:#f6f6f2;padding-block:48px}
+.contact-section-title{margin-bottom:24px}
+.contact-section-title h2{font-size:30px;line-height:1.4;margin:0 0 6px}
+.contact-section-title p{font-size:15px;line-height:1.7;color:#62695c;margin:0}
+#contact.contact-reference .contact-grid{grid-template-columns:minmax(0,1fr) 300px;gap:32px;align-items:start}
+#contact.contact-reference .contact-form{padding:28px;border:1px solid #dfe2d9;border-radius:20px;background:white}
+.contact-company{padding:24px;border-radius:18px;background:#eeeee7;border:1px solid #e1e2d8;min-width:0}
+.contact-company h3{font-size:21px;line-height:1.4;margin:0 0 16px}
+.contact-company-name{font-size:16px;font-weight:500;margin:0 0 4px}
+.contact-company-brand{font-size:10px;letter-spacing:1px;color:#69705f}
+.contact-company-section{padding-top:20px;margin-top:20px;border-top:1px solid #d6dacd}
+.contact-company h4{font-size:13px;color:#9f2926;margin:0 0 10px}
+.contact-company-section strong{font-size:18px;font-weight:500}
+.contact-company-section p,.contact-company-section li{font-size:14px;line-height:1.7;color:#62695c}
+.contact-company-section p{margin:4px 0 12px}
+.contact-company-section ul{padding-left:18px;margin:0;display:grid;gap:6px}
+.contact-map-link{display:flex;align-items:center;gap:7px;font-size:14px;min-height:44px;text-decoration:underline;text-underline-offset:4px}
+.contact-company-note{font-size:12px;line-height:1.7;color:#62695c;padding-top:18px;margin:20px 0 0;border-top:1px solid #d6dacd}
+.enquiry-form-v2 .form-project{margin:0;padding:0;border:0}
+.enquiry-form-v2 .form-intro{margin:10px 0 22px;font-size:14px;line-height:1.7}
+.enquiry-form-v2 .enquiry-group{margin:0;padding:0;border:0;min-width:0}
+.enquiry-form-v2 .enquiry-group+.enquiry-group{margin-top:26px;padding-top:24px;border-top:1px solid #e1e4da}
+.enquiry-form-v2 .enquiry-group h3{font-size:18px;font-weight:600;line-height:1.4;margin:0 0 16px}
+.enquiry-form-v2 .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 20px;margin:0}
+.enquiry-form-v2 .form-grid label{display:block;font-size:14px;font-weight:500;line-height:1.6;min-width:0;margin:0}
+.enquiry-form-v2 .form-grid .full{grid-column:1/-1}
+.enquiry-form-v2 .form-grid input,.enquiry-form-v2 .form-grid select,.enquiry-form-v2 .form-grid textarea{display:block;box-sizing:border-box;width:100%;min-width:0;min-height:48px;margin:7px 0 0;padding:12px 13px;font:inherit;font-weight:400;font-size:15px;line-height:1.5;color:#272d25;background:#fff;border:1px solid #cfd4c8;border-radius:10px}
+.enquiry-form-v2 .form-grid textarea{resize:vertical;min-height:112px}
+.enquiry-form-v2 .form-grid input:focus,.enquiry-form-v2 .form-grid select:focus,.enquiry-form-v2 .form-grid textarea:focus{outline:2px solid #a32c28;outline-offset:2px;box-shadow:none}
+.enquiry-form-v2 .form-grid [aria-invalid=true]{border-color:#a32c28}
+.enquiry-form-v2 .form-grid label>small{display:block;font-size:12px;font-weight:400;line-height:1.6;color:#6b7164;margin-top:6px}
+.enquiry-form-v2 .required-mark{color:#ac2824;font-weight:500}
+.enquiry-form-v2 .optional-label{font-size:12px;font-weight:400;color:#767d6d}
+.enquiry-form-v2 .message-count{text-align:right;font-variant-numeric:tabular-nums}
+.enquiry-form-v2 .visit-fields{background:#f6f6f1;border:1px solid #e2e5da;padding:16px;border-radius:12px}
+.enquiry-form-v2 .visit-fields>p{font-size:12px;line-height:1.6;color:#62695c;margin:12px 0 0}
+.enquiry-form-v2 .enquiry-submit-area{border-top:1px solid #e1e4da;margin-top:24px;padding-top:20px}
+.enquiry-form-v2 .consent{display:flex;align-items:flex-start;gap:10px;font-size:13px;line-height:1.7;margin:0 0 20px}
+.enquiry-form-v2 .consent input{width:18px;height:18px;margin-top:3px;flex:0 0 18px;accent-color:#a32c28}
+.enquiry-form-v2 .form-submit{width:auto;min-width:220px;min-height:48px;margin:0;padding:12px 24px;border-radius:10px;background:#a32c28;color:white;border:1px solid #a32c28;font-size:15px}
+.enquiry-form-v2 .form-note{font-size:12px;margin:10px 0 0;line-height:1.6}
+@media(max-width:1023px){#contact.contact-reference .contact-grid{grid-template-columns:minmax(0,1fr);gap:20px}.contact-company{padding:20px}#contact.contact-reference .contact-form{padding:24px}}
+@media(max-width:600px){#contact.contact-reference{padding-block:32px}.contact-section-title h2{font-size:26px}#contact.contact-reference .contact-form{padding:20px 16px;border-radius:16px}.enquiry-form-v2 .form-grid{grid-template-columns:minmax(0,1fr);gap:16px}.enquiry-form-v2 .form-grid input,.enquiry-form-v2 .form-grid select,.enquiry-form-v2 .form-grid textarea{font-size:16px}.enquiry-form-v2 .form-submit{width:100%;min-width:0}.enquiry-form-v2 .enquiry-group+.enquiry-group{margin-top:22px;padding-top:20px}.enquiry-form-v2 .visit-fields{padding:12px}.contact-company{border-radius:16px}.contact-section-title p{font-size:14px}}
