@@ -1,4 +1,4 @@
-# DEAL Human Allowed UI Update v2
+# DEAL Human Allowed Mobile Update v3
 ชุดอัปเดตนี้รวมการแก้จาก ZIP รอบก่อนแล้ว นำ app และ lib ไปวางทับใน repository เดิม ไม่ต้องลบไฟล์อื่น
 ไม่มีการตั้งค่า Cloudflare/D1 หรือ deploy ใน ZIP นี้
 
@@ -26,3 +26,14 @@
 - lib/project.ts
 - app/construction.tsx
 - lib/translations.ts
+
+## รอบ v3: มือถือหน้ารายการโครงการ
+ปรับเฉพาะ breakpoint ไม่เกิน 600px ใน app/desktop-layout.css ซึ่งเป็นไฟล์ layout ที่มี shared/mobile rules เดิม
+- หัวข้อ/จำนวนโครงการอยู่ซ้าย ปุ่มดูทั้งหมดอยู่ขวาในแถวเดียว
+- ลูกศรเลื่อนไปอยู่ใต้การ์ด ไม่กินพื้นที่ก่อนเห็นโครงการ
+- ลด padding/gap และภาพเป็น 16:9 โดยยัง object-fit:contain เพื่อไม่ตัดตัวบ้าน
+- ลดกรอบซ้อนข้อมูลห้องและจัดข้อมูลราคาให้กระชับ
+- การ์ดไม่ยืดสูงตามการ์ดข้างเคียงบนมือถือ
+- ยังคง swipe, keyboard และปุ่มเลื่อนที่มี touch target 44px
+Desktop และข้อมูลธุรกิจคงเดิม ไม่แก้ Cloudflare/D1
+Build และ TypeScript ผ่าน แต่ยังไม่ได้ยืนยันหน้าจอผ่าน browser หลังแก้เนื่องจาก preview ไม่พร้อม
