@@ -1,11 +1,11 @@
 export const translations: Record<string, [string, string]> = {
-  "อาคารบ้านพัก Human Alloewd Airpod Chiangmai และบันไดภายนอกระหว่างก่อสร้าง": [
-    "Human Alloewd Airpod Chiangmai and external stairs during construction",
-    "建设中的 Human Alloewd Airpod Chiangmai 及室外楼梯"
+  "อาคารบ้านพัก Human Allowed Airport Chiangmai และบันไดภายนอกระหว่างก่อสร้าง": [
+    "Human Allowed Airport Chiangmai and external stairs during construction",
+    "建设中的 Human Allowed Airport Chiangmai 及室外楼梯"
   ],
-  "แนวบ้านพักและหลังคา Human Alloewd Airpod Chiangmai": [
-    "Human Alloewd Airpod Chiangmai buildings and roofs",
-    "Human Alloewd Airpod Chiangmai 房屋及屋顶"
+  "แนวบ้านพักและหลังคา Human Allowed Airport Chiangmai": [
+    "Human Allowed Airport Chiangmai buildings and roofs",
+    "Human Allowed Airport Chiangmai 房屋及屋顶"
   ],
   "รายละเอียดระเบียงและผนังภายนอกบ้านพัก": [
     "Balcony and exterior wall details",
@@ -1903,9 +1903,9 @@ export const translations: Record<string, [string, string]> = {
     "DEAL!, operated by Deal Invest Co., Ltd., is an intermediary for rental-house business ownership. We connect project sourcing and development with ongoing management, from preparation to guest operations.",
     "DEAL! 由 Deal Invest Co., Ltd. 运营，作为出租房屋经营项目的持有权益中介，将项目寻找与开发连接到后续管理，服务涵盖筹备至接待住客后的运营。"
   ],
-  "ภาพจริง Human Alloewd Chiangmai Gate โครงการแรกที่สร้างเสร็จและเปิดดำเนินงานแล้ว": [
-    "Actual photo of Human Alloewd Chiangmai Gate, the first completed and operating project",
-    "Human Alloewd Chiangmai Gate 实拍：首个已完工并投入运营的项目"
+  "ภาพจริง Human Allowed Chiangmai Gate โครงการแรกที่สร้างเสร็จและเปิดดำเนินงานแล้ว": [
+    "Actual photo of Human Allowed Chiangmai Gate, the first completed and operating project",
+    "Human Allowed Chiangmai Gate 实拍：首个已完工并投入运营的项目"
   ],
   "จากโครงการที่ทำจริง": [
     "An actual completed project",
