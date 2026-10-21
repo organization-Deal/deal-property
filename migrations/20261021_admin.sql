@@ -1,0 +1,9 @@
+-- Additive migration. Existing enquiries are not changed.
+CREATE TABLE IF NOT EXISTS admin_sessions (token TEXT PRIMARY KEY, expires INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS admin_limits (key TEXT PRIMARY KEY, count INTEGER NOT NULL, expires INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS site_content (id INTEGER PRIMARY KEY CHECK(id=1), revision INTEGER NOT NULL DEFAULT 0, draft TEXT NOT NULL DEFAULT '{}', published TEXT NOT NULL DEFAULT '{}', published_at INTEGER);
+INSERT OR IGNORE INTO site_content(id) VALUES(1);
+CREATE TABLE IF NOT EXISTS site_history (id INTEGER PRIMARY KEY AUTOINCREMENT, content TEXT NOT NULL, created_at INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS site_media (id TEXT PRIMARY KEY, mime TEXT NOT NULL, body BLOB NOT NULL, created_at INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS site_events (id INTEGER PRIMARY KEY AUTOINCREMENT, session TEXT NOT NULL, kind TEXT NOT NULL, path TEXT NOT NULL, target TEXT NOT NULL, source TEXT NOT NULL, device TEXT NOT NULL, created_at INTEGER NOT NULL);
+CREATE INDEX IF NOT EXISTS site_events_time ON site_events(created_at);

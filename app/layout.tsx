@@ -1,3 +1,5 @@
+import { SiteContentProvider } from './site-content';
+import { SiteAnalytics } from './site-analytics';
 import { LanguageProvider } from './language';
 import type { Metadata } from 'next';
 import './globals.css';
@@ -19,5 +21,5 @@ export const metadata: Metadata = {
  icons: { icon: '/favicon.svg', shortcut: '/favicon.svg' },
 };
 export default function RootLayout({children}: Readonly<{children: React.ReactNode}>) {
- return <html lang="th"><body><LanguageProvider>{children}</LanguageProvider></body></html>;
+ return <html lang="th"><body><SiteContentProvider><LanguageProvider>{children}<SiteAnalytics/></LanguageProvider></SiteContentProvider></body></html>;
 }

@@ -1,5 +1,6 @@
 'use client';
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useSiteContent } from './site-content';
 import { Globe2 } from 'lucide-react';
 import { isLanguage, languageHref, translateText, translateValue, type Language } from '../lib/i18n';
 const storageKey = 'deal-language';
@@ -18,7 +19,7 @@ export function LanguageProvider({children,initialLanguage="th"}:{children:React
   return ()=>window.removeEventListener('popstate',sync);
  },[]);
  useEffect(()=>{
-  if (!ready) return;
+  if (!ready || location.pathname.startsWith('/admin')) return;
   document.documentElement.lang = language === 'zh' ? 'zh-Hans' : language;
   try { localStorage.setItem(storageKey,language); } catch { /* Keep switching usable without storage. */ }
   const url = new URL(location.href); url.searchParams.set('lang',language);
@@ -34,7 +35,8 @@ export function LanguageProvider({children,initialLanguage="th"}:{children:React
 }
 export function useLanguage(){
  const context=useContext(LanguageContext);
- return {...context,translate:<T,>(value:T):T=>translateValue(value,context.language),localizedHref:(href:string)=>languageHref(href,context.language)};
+ const content=useSiteContent();
+ return {...context,translate:<T,>(value:T):T=>(typeof value==='string' && content.texts[value]?.[context.language] ? content.texts[value][context.language] as T : translateValue(value,context.language)),localizedHref:(href:string)=>languageHref(href,context.language)};
 }
 export function LanguageSelector(){
  const {language,setLanguage}=useLanguage();
