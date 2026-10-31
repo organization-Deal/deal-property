@@ -14,7 +14,8 @@ export function OwnershipPicker({ selection, onChange, onEnquire }: {
     const parsed = parseShare(input);
     const unavailable = parsed !== null && parsed > PROJECT.remainingPercent;
     const invalid = mode === 'co-owner' && (parsed === null || unavailable);
-    const choose = (share: number) => { setInput(String(share)); onChange({ ownership: 'co-owner', sharePct: share }); };
+    const trackShare=(share:number)=>window.dispatchEvent(new CustomEvent('deal-share-select',{detail:share}));
+    const choose = (share: number) => { trackShare(share); setInput(String(share)); onChange({ ownership: 'co-owner', sharePct: share }); };
     return <div className="ownership-card compact-calculator" data-mode={mode}>
     <div className="ownership-tabs" role="group" aria-label={translate("รูปแบบการเป็นเจ้าของ")}>{translate([['co-owner', 'เจ้าของร่วม'], ['whole', 'ราคาทั้งหลังอ้างอิง']].map(([value, label]) => <button key={value} aria-pressed={mode === value} onClick={() => onChange({ ownership: value as 'co-owner' | 'whole', sharePct: parsed ?? undefined, shareInvalid: value === 'co-owner' && (parsed === null || unavailable) })}>{translate(label)}</button>))}</div>
     <div className="ownership-card-inner">
@@ -22,7 +23,7 @@ export function OwnershipPicker({ selection, onChange, onEnquire }: {
       {translate(mode === 'co-owner' ? <div className="share-calculator">
         <label htmlFor={`${id}-share`}>{translate("เลือกหรือกรอกสัดส่วน")}</label>
         <div className="share-presets" role="group" aria-label={translate("เลือกเปอร์เซ็นต์ด่วน")}>{translate([10, 20, 30, 50].map(value => <button key={value} type="button" aria-pressed={parsed === value} onClick={() => choose(value)}>{translate(value)}{translate("%")}</button>))}</div>
-        <div className="share-input-wrap"><input id={`${id}-share`} type="text" inputMode="decimal" value={input} maxLength={6} aria-invalid={invalid} aria-describedby={`${id}-help`} onChange={e => { setInput(e.target.value); const next = parseShare(e.target.value); onChange({ ownership: 'co-owner', sharePct: next ?? undefined, shareInvalid: next === null || next > PROJECT.remainingPercent }); }}/><span aria-hidden="true">{translate("%")}</span></div>
+        <div className="share-input-wrap"><input id={`${id}-share`} onBlur={()=>{if(parsed!==null&&!unavailable)trackShare(parsed)}} type="text" inputMode="decimal" value={input} maxLength={6} aria-invalid={invalid} aria-describedby={`${id}-help`} onChange={e => { setInput(e.target.value); const next = parseShare(e.target.value); onChange({ ownership: 'co-owner', sharePct: next ?? undefined, shareInvalid: next === null || next > PROJECT.remainingPercent }); }}/><span aria-hidden="true">{translate("%")}</span></div>
         <p id={`${id}-help`} className={invalid ? 'share-error' : 'share-help'}>{translate(invalid ? 'กรอก 10–60% ทศนิยมไม่เกิน 2 ตำแหน่ง' : 'กรอกเองได้ เช่น 13% · ขั้นต่ำ 10%')}</p>
       </div> : <p className="whole-reference">{translate("มูลค่าทั้งหลังใช้เป็นฐานคำนวณสัดส่วน")}<br /><strong>{translate("ยังไม่เปิดให้เลือก 100% จากยอดคงเหลือปัจจุบัน")}</strong></p>)}
       <div className="calculator-quote"><div className="calculator-result"><p className="calculation-label">{translate(mode === 'whole' ? 'มูลค่าทั้งหลังอ้างอิง · รวมภาษี' : 'ราคาตามสัดส่วน · รวมภาษี')}</p>

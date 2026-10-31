@@ -1,7 +1,32 @@
-อัปโหลดไฟล์ในโฟลเดอร์ app, lib, migrations, tests, docs ทับ repository เดิม โดยคงไฟล์อื่นไว้
-อ่าน docs/ADMIN-LEADS-SETUP.md ก่อนเปิดใช้งาน
-GitHub connector ปฏิเสธการเขียน 403 งานนี้จึงยังไม่ได้อัป main หรือ deploy
-ชุดนี้มีเฉพาะ 15 ไฟล์ที่เปลี่ยนจาก commit 24f484ac1bb0e742549ec9bf0d994aea6fd80558
-ไม่มีราคา Database ID หรือการตั้งค่า Cloudflare เปลี่ยน
-ต้องตั้ง Worker Secret ADMIN_PASSWORD อย่างน้อย 16 ตัวอักษรด้วยตัวเองหากยังไม่ได้ตั้ง
-ตารางที่ขาดจะถูกสร้างอัตโนมัติเมื่อส่งฟอร์มหรือเข้าสู่หลังบ้าน หาก DB binding ใช้งานได้
+ชุดอัปเดตเว็บบ้าน: รวม Lead Admin เดิมและ Analytics v2
+อ่าน docs/ANALYTICS-V2-TH.md ก่อนติดตั้ง
+แตก ZIP แล้วอัปโฟลเดอร์ภายในทับ repository เดิม ไม่ลบไฟล์อื่น
+เข้า /admin > วิเคราะห์ผู้เข้าชม ใช้รหัสเดิม
+ยังไม่ได้อัป GitHub หรือ Deploy ในรอบนี้
+app/admin/admin.css
+app/admin/analytics.tsx
+app/admin/leads.tsx
+app/admin/panel.tsx
+app/api/admin/analytics/route.ts
+app/api/admin/leads/route.ts
+app/api/admin/stats/route.ts
+app/api/analytics/events/route.ts
+app/api/enquiries/route.ts
+app/api/events/route.ts
+app/enquiry-form.tsx
+app/ownership-picker.tsx
+app/site-analytics.tsx
+app/site.tsx
+build/sites-worker.ts
+docs/ADMIN-LEADS-SETUP.md
+docs/ANALYTICS-V2-TH.md
+lib/admin-server.ts
+lib/analytics-contract.ts
+lib/analytics-report.ts
+lib/database-ready.ts
+lib/lead-workflow.ts
+lib/request-geo.ts
+lib/translations.ts
+migrations/20261031_leads.sql
+migrations/20261101_analytics.sql
+tests/admin-integration.cjs

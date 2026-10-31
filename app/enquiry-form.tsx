@@ -47,6 +47,7 @@ export function EnquiryForm({ initial = {} }: {
         };
         const parsed = enquirySchema.safeParse(payload);
         if (!parsed.success) {
+            window.dispatchEvent(new CustomEvent('deal-form-error',{detail:'validation'}));
             const next: Record<string, string> = {};
             for (const issue of parsed.error.issues)
                 next[String(issue.path[0])] ??= issue.message;
@@ -71,13 +72,15 @@ export function EnquiryForm({ initial = {} }: {
                 id?: string;
                 error?: string;
             };
-            if (!response.ok || !result.id)
-                throw new Error(result.error || 'ยังไม่ได้รับการยืนยัน กรุณาลองส่งอีกครั้ง');
+            if (!response.ok || !result.id) { window.dispatchEvent(new CustomEvent('deal-form-error',{detail:'server'}));
+                throw new Error(result.error || 'ยังไม่ได้รับการยืนยัน กรุณาลองส่งอีกครั้ง'); }
             window.dispatchEvent(new Event('deal-form-success'));
             setReference(result.id);
             setStatus('success');
         }
         catch (err) {
+            if(err instanceof Error && err.name==='AbortError')window.dispatchEvent(new CustomEvent('deal-form-error',{detail:'timeout'}));
+            else if(err instanceof TypeError)window.dispatchEvent(new CustomEvent('deal-form-error',{detail:'network'}));
             setError(err instanceof Error && err.name !== 'AbortError' ? err.message : 'ยังยืนยันการส่งไม่ได้ ข้อมูลที่กรอกยังอยู่ กดส่งอีกครั้งได้โดยไม่บันทึกซ้ำหากข้อมูลเดิมถูกบันทึกแล้ว');
             setStatus('idle');
         }

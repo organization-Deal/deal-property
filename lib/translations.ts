@@ -1,4 +1,7 @@
 export const translations: Record<string, [string, string]> = {
+  "สถิติการใช้งานเว็บไซต์": ["Website usage analytics", "网站使用统计"],
+  "เมื่อคุณอนุญาต เราเก็บรหัสเซสชัน หน้าและส่วนที่เปิด การคลิก สัดส่วนที่เลือก เวลาใช้งานโดยประมาณ อุปกรณ์ แหล่งที่มา แคมเปญ และประเทศหรือภูมิภาคโดยประมาณจากเครือข่าย เพื่อวิเคราะห์และปรับปรุงเว็บไซต์ ไม่เก็บข้อความในช่องกรอก รหัสนี้ไม่ใช่ชื่อบุคคล ข้อมูลสถิติเก่ากว่า 90 วันจะถูกลบเมื่อระบบได้รับอีเวนต์ใหม่ คุณเปลี่ยนความยินยอมได้ที่ปุ่ม Privacy ด้านล่างเว็บไซต์ ระบบไม่เก็บสถิติหากเบราว์เซอร์เปิด Do Not Track": ["With your permission, we collect a session identifier, pages and sections viewed, clicks, selected ownership percentage, approximate active time, device category, traffic source, campaign, and approximate network-derived country or region to improve this website. We do not record text entered in form fields. The identifier is not a person's name. Analytics older than 90 days are deleted when a new event is received. Change your consent using the Privacy button at the bottom of the website. Tracking is disabled when your browser enables Do Not Track.", "经您同意，我们收集会话编号、浏览页面和内容区、点击、选择的持有比例、大致使用时间、设备类别、访问来源、推广活动以及基于网络估计的国家或地区，用于改进网站。不会记录表单输入文本。会话编号并非个人姓名。系统收到新事件时会删除超过90天的统计记录。您可通过网站底部的Privacy按钮更改同意设置。浏览器启用Do Not Track时不进行统计。"],
+
   "อาคารบ้านพัก Human Allowed Airport Chiangmai และบันไดภายนอกระหว่างก่อสร้าง": [
     "Human Allowed Airport Chiangmai and external stairs during construction",
     "建设中的 Human Allowed Airport Chiangmai 及室外楼梯"

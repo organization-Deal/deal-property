@@ -1,0 +1,8 @@
+import {db,json,sameOrigin,limited,digest,body} from '@/lib/admin-server';
+import {eventV2} from '@/lib/analytics-contract';
+import {requestGeo} from '@/lib/request-geo';
+export async function POST(req:Request){if(!sameOrigin(req))return json({error:'Origin'},403);if(!req.headers.get('content-type')?.includes('application/json'))return json({error:'Content type'},415);try{const result=eventV2.safeParse(await body(req));if(!result.success)return json({error:'Invalid event'},400);if(await limited('analytics:'+await digest(req.headers.get('cf-connecting-ip')||'unknown'),180,60000))return json({error:'Rate limit'},429);const d=result.data,g=requestGeo(req),time=Date.now();
+const legacy=['page','click','scroll','form_start','form_success'].includes(d.kind);const statements=[];
+if(legacy)statements.push(db().prepare('INSERT INTO site_events(session,kind,path,target,source,device,created_at) SELECT ?,?,?,?,?,?,? WHERE NOT EXISTS(SELECT id FROM analytics_events_v2 WHERE id=?)').bind(d.session,d.kind,d.path,d.target,d.source,d.device,time,d.id));
+statements.push(db().prepare('INSERT INTO analytics_events_v2(id,session,page_id,kind,path,target,source,medium,campaign,device,country,region,city,value,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO NOTHING').bind(d.id,d.session,d.pageId,d.kind,d.path,d.target,d.source,d.medium,d.campaign,d.device,g.country,g.region,g.city,d.value,time));await db().batch(statements);
+await db().batch([db().prepare('DELETE FROM analytics_events_v2 WHERE created_at<?').bind(time-90*86400000),db().prepare('DELETE FROM site_events WHERE created_at<?').bind(time-90*86400000)]);return json({ok:true});}catch{return json({error:'Analytics unavailable'},503);}}
