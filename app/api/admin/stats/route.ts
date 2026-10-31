@@ -6,5 +6,7 @@ export async function GET(req:Request){try{const denied=await guard(req);if(deni
 "SELECT target label,count(*) value FROM site_events WHERE kind='click' AND created_at>=? GROUP BY target ORDER BY value DESC",
 "SELECT source label,count(DISTINCT session) value FROM site_events WHERE kind='page' AND created_at>=? GROUP BY source",
 "SELECT device label,count(DISTINCT session) value FROM site_events WHERE kind='page' AND created_at>=? GROUP BY device",
-"SELECT target label,count(DISTINCT session) value FROM site_events WHERE kind='scroll' AND created_at>=? GROUP BY target ORDER BY CAST(target AS INTEGER)"
-];const results=await db().batch(queries.map(q=>db().prepare(q).bind(since)));return json({totals:results[0].results[0],daily:results[1].results,pages:results[2].results,clicks:results[3].results,sources:results[4].results,devices:results[5].results,scroll:results[6].results});}catch{return json({error:'อ่านสถิติไม่ได้ ตรวจ migration และ DB'},503);}}
+"SELECT target label,count(DISTINCT session) value FROM site_events WHERE kind='scroll' AND created_at>=? GROUP BY target ORDER BY CAST(target AS INTEGER)",
+"SELECT kind label,count(*) value FROM site_events WHERE kind IN ('form_start','form_success') AND created_at>=? GROUP BY kind",
+"SELECT count(*) total FROM enquiries WHERE created_at>=?"
+];const results=await db().batch(queries.map(q=>db().prepare(q).bind(since)));return json({totals:results[0].results[0],daily:results[1].results,pages:results[2].results,clicks:results[3].results,sources:results[4].results,devices:results[5].results,scroll:results[6].results,funnel:results[7].results,leads:results[8].results[0]});}catch{return json({error:'อ่านสถิติไม่ได้ ตรวจ migration และ DB'},503);}}

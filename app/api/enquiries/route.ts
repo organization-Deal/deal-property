@@ -1,5 +1,5 @@
-import { getDb } from '@/db';
-import { enquiries } from '@/db/schema';
+import { ensureDatabase } from '@/lib/database-ready';
+import { db } from '@/lib/admin-server';
 import { enquirySchema } from '@/lib/enquiry';
 import { enquiryReference } from '@/lib/enquiry-reference';
 import { money, ownershipPrice } from '@/lib/project';
@@ -22,7 +22,10 @@ export async function POST(request: Request) {
  data.message=`Preferred language: ${{th:'Thai',zh:'Chinese (Simplified)',en:'English'}[language]}\n${data.message}`;
  const id=await enquiryReference(requestId??crypto.randomUUID(),data);
  try {
-  await getDb().insert(enquiries).values({...data,visitDate:data.purpose==='visit'?data.visitDate:'',id,createdAt:Date.now(),consentVersion:'enquiry-2026-10-v1'}).onConflictDoNothing({target:enquiries.id});
+  await ensureDatabase();
+  await db().prepare('INSERT INTO enquiries(id,name,phone,email,project,ownership,purpose,visit_date,contact_time,message,source,consent_version,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO NOTHING').bind(id,data.name,data.phone,data.email,data.project,data.ownership,data.purpose,data.purpose==='visit'?data.visitDate:'',data.contactTime,data.message,data.source,'enquiry-2026-10-v1',Date.now()).run();
+  const saved=await db().prepare('SELECT id FROM enquiries WHERE id=?').bind(id).first();
+  if(!saved)throw new Error('Persistence verification failed');
   return Response.json({id},{status:201,headers:{'Cache-Control':'no-store'}});
  } catch {return Response.json({error:'ยังบันทึกข้อมูลไม่สำเร็จ ข้อมูลที่กรอกยังอยู่ กรุณาลองอีกครั้ง'},{status:503});}
 }

@@ -73,6 +73,7 @@ export function EnquiryForm({ initial = {} }: {
             };
             if (!response.ok || !result.id)
                 throw new Error(result.error || 'ยังไม่ได้รับการยืนยัน กรุณาลองส่งอีกครั้ง');
+            window.dispatchEvent(new Event('deal-form-success'));
             setReference(result.id);
             setStatus('success');
         }

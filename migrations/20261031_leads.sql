@@ -1,0 +1,3 @@
+CREATE TABLE IF NOT EXISTS enquiries (id TEXT PRIMARY KEY NOT NULL,name TEXT NOT NULL,phone TEXT NOT NULL,email TEXT NOT NULL DEFAULT '',project TEXT NOT NULL,ownership TEXT NOT NULL,purpose TEXT NOT NULL,visit_date TEXT NOT NULL DEFAULT '',contact_time TEXT NOT NULL,message TEXT NOT NULL DEFAULT '',source TEXT NOT NULL,consent_version TEXT NOT NULL,created_at INTEGER NOT NULL);
+CREATE INDEX IF NOT EXISTS enquiries_created ON enquiries(created_at);
+CREATE TABLE IF NOT EXISTS enquiry_workflow (enquiry_id TEXT PRIMARY KEY REFERENCES enquiries(id),status TEXT NOT NULL DEFAULT 'new',assignee TEXT NOT NULL DEFAULT '',notes TEXT NOT NULL DEFAULT '',updated_at INTEGER NOT NULL,revision INTEGER NOT NULL DEFAULT 1);
