@@ -1,4 +1,5 @@
 'use client';
+import {CmsImage,useSiteContent} from './site-content';
 import { useLanguage } from "./language";
 import { useEffect, useRef, useState } from 'react';
 import { PROJECT } from '../lib/project';
@@ -63,7 +64,7 @@ export function ConstructionProjects({ compact = false }: {
       </div>
       <div className="portfolio-list" ref={portfolioList} role="region" aria-label={translate("ผลงานที่ผ่านมา เลื่อนซ้ายขวาเพื่อดูโครงการ")} tabIndex={0}>{translate(projects.map((item, index) => <article className="portfolio-card" key={item.prefix}>
         <button className="portfolio-cover" onClick={() => openGallery(index)} aria-label={translate(`ดูภาพ ${item.title} ทั้งหมด ${item.photos.length} รูป`)}>
-          <img src={`/assets/${item.prefix}-${item.photos[0].id}.webp`} alt={translate(item.photos[0].alt)} loading="lazy"/>
+          <CmsImage src={`/assets/${item.prefix}-${item.photos[0].id}.webp`} alt={translate(item.photos[0].alt)} loading="lazy"/>
           <span className="construction-expand"><Expand size={17}/> {translate(item.photos.length)}{translate(" รูป")}</span>
         </button>
         <div className="portfolio-content">
@@ -81,7 +82,7 @@ export function ConstructionProjects({ compact = false }: {
         setSelected(((selected ?? 0) + (e.key === 'ArrowRight' ? 1 : -1) + galleryPhotos.length) % galleryPhotos.length);
     } }} aria-label={translate(`ภาพผลงาน ${project.title}`)} onCancel={() => setSelected(null)} onClick={e => { if (e.target === dialog.current)
         setSelected(null); }}>
-      {translate(current && <><div className="construction-dialog-head"><span>{translate(project.title)}{translate(" \u00B7 ")}{translate((selected ?? 0) + 1)}{translate(" / ")}{translate(galleryPhotos.length)}</span><button className="icon-button" onClick={() => setSelected(null)} aria-label={translate("ปิดภาพ")}><X /></button></div><img src={`/assets/${project.prefix}-${current.id}.webp`} alt={translate(current.alt)}/><div className="construction-dialog-nav"><button className="btn btn-outline" onClick={() => setSelected(((selected ?? 0) + galleryPhotos.length - 1) % galleryPhotos.length)}>{translate("ภาพก่อนหน้า")}</button><button className="btn" onClick={() => setSelected(((selected ?? 0) + 1) % galleryPhotos.length)}>{translate("ภาพถัดไป")}</button></div></>)}
+      {translate(current && <><div className="construction-dialog-head"><span>{translate(project.title)}{translate(" \u00B7 ")}{translate((selected ?? 0) + 1)}{translate(" / ")}{translate(galleryPhotos.length)}</span><button className="icon-button" onClick={() => setSelected(null)} aria-label={translate("ปิดภาพ")}><X /></button></div><CmsImage src={`/assets/${project.prefix}-${current.id}.webp`} alt={translate(current.alt)}/><div className="construction-dialog-nav"><button className="btn btn-outline" onClick={() => setSelected(((selected ?? 0) + galleryPhotos.length - 1) % galleryPhotos.length)}>{translate("ภาพก่อนหน้า")}</button><button className="btn" onClick={() => setSelected(((selected ?? 0) + 1) % galleryPhotos.length)}>{translate("ภาพถัดไป")}</button></div></>)}
     </dialog>
   </section>;
 }

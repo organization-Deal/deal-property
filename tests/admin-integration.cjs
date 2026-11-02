@@ -5,13 +5,14 @@ const root=path.resolve(__dirname,'..');const sqlite=new DatabaseSync(':memory:'
 // Start with an empty database to verify automatic bootstrap.
 function statement(sql,values=[]){return {bind(...v){return statement(sql,v.map(x=>x instanceof ArrayBuffer?new Uint8Array(x):x))},async first(){return sqlite.prepare(sql).get(...values)||null},async all(){return {results:sqlite.prepare(sql).all(...values)}},async run(){return sqlite.prepare(sql).run(...values)},sql,values};}
 const env={DB:{prepare:statement,async batch(list){sqlite.exec('BEGIN');try{const rows=list.map(s=>{const prepared=sqlite.prepare(s.sql);return /RETURNING|^SELECT|^WITH/i.test(s.sql)?{results:prepared.all(...s.values)}:{results:[],meta:prepared.run(...s.values)}});sqlite.exec('COMMIT');return rows}catch(e){sqlite.exec('ROLLBACK');throw e}}},ADMIN_PASSWORD:'test-only-not-a-real-secret-2026'};
-const cache=new Map();function load(file){file=path.resolve(root,file);if(cache.has(file))return cache.get(file).exports;const mod={exports:{}};cache.set(file,mod);const src=ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;new Function('require','module','exports',src)((id)=>{if(id==='cloudflare:workers')return {env};if(id.startsWith('.'))return load(path.resolve(path.dirname(file),id)+'.ts');if(id.startsWith('@/'))return load(id.slice(2)+'.ts');return require(id)},mod,mod.exports);return mod.exports;}
+const cache=new Map();function load(file){file=path.resolve(root,file);if(cache.has(file))return cache.get(file).exports;const mod={exports:{}};cache.set(file,mod);const src=ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;new Function('require','module','exports',src)((id)=>{if(id==='cloudflare:workers')return {env};if(id.endsWith('.json'))return {default:JSON.parse(fs.readFileSync(path.resolve(path.dirname(file),id),'utf8'))};if(id.startsWith('.'))return load(path.resolve(path.dirname(file),id)+'.ts');if(id.startsWith('@/'))return load(id.slice(2)+'.ts');return require(id)},mod,mod.exports);return mod.exports;}
 const leads=load('app/api/admin/leads/route.ts'),submit=load('app/api/enquiries/route.ts');
 const session=load('app/api/admin/session/route.ts'),content=load('app/api/admin/content/route.ts'),publicContent=load('app/api/content/route.ts'),events=load('app/api/events/route.ts'),stats=load('app/api/admin/stats/route.ts'),media=load('app/api/admin/media/route.ts'),serveMedia=load('app/api/media/[id]/route.ts');
 let cookie='';function req(route,method='GET',data,origin='https://test.local'){return new Request('https://test.local'+route,{method,headers:{origin,cookie,'Content-Type':'application/json','cf-connecting-ip':'192.0.2.1'},...(data===undefined?{}:{body:JSON.stringify(data)})})}
 (async()=>{
  assert.equal((await content.GET(req('/api/admin/content'))).status,401);
  assert.equal((await stats.GET(req('/api/admin/stats'))).status,401);
+ assert.equal((await media.GET(req('/api/admin/media'))).status,401);
  assert.equal((await session.POST(req('/api/admin/session','POST',{password:env.ADMIN_PASSWORD},'https://other.local'))).status,403);
  assert.equal((await session.POST(req('/api/admin/session','POST',{password:'wrong'}))).status,401);
  const login=await session.POST(req('/api/admin/session','POST',{password:env.ADMIN_PASSWORD}));assert.equal(login.status,200);assert.match(login.headers.get('set-cookie'),/HttpOnly; Secure; SameSite=Strict/);cookie=login.headers.get('set-cookie').split(';')[0];
@@ -48,7 +49,14 @@ let cookie='';function req(route,method='GET',data,origin='https://test.local'){
  assert.equal((await events.POST(req('/api/events','POST',{...e,kind:'scroll',target:'project'}))).status,400);
  const s=await (await stats.GET(req('/api/admin/stats?days=7'))).json();assert.equal(s.leads.total,1);assert.equal(s.totals.views,1);assert.equal(s.totals.sessions,1);assert.equal(s.clicks[0].value,1);
  const form=new FormData();form.append('file',new File([Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+a9p8AAAAASUVORK5CYII=','base64')],'test.png',{type:'image/png'}));
- const upload=await media.POST(new Request('https://test.local/api/admin/media',{method:'POST',headers:{origin:'https://test.local',cookie},body:form}));assert.equal(upload.status,200);const uploaded=await upload.json();const image=await serveMedia.GET(req(uploaded.url));assert.equal(image.status,200);assert.equal(image.headers.get('content-type'),'image/png');assert.ok((await image.arrayBuffer()).byteLength>12);
+ const upload=await media.POST(new Request('https://test.local/api/admin/media',{method:'POST',headers:{origin:'https://test.local',cookie},body:form}));assert.equal(upload.status,200);const uploaded=await upload.json();const image=await serveMedia.GET(req(uploaded.url));assert.equal(image.status,200);assert.equal(image.headers.get('content-type'),'image/png');const uploadedBytes=new Uint8Array(await image.arrayBuffer());assert.ok(uploadedBytes.byteLength>12);
+ const uploadedId=uploaded.url.split('/').pop();
+ const initialMedia=await (await media.GET(req('/api/admin/media'))).json();assert.equal(initialMedia.total,1);assert.equal(initialMedia.pageSize,24);assert.equal(initialMedia.items[0].id,uploadedId);assert.equal(initialMedia.items[0].url,uploaded.url);assert.equal(initialMedia.items[0].mime,'image/png');assert.equal(initialMedia.items[0].size,uploadedBytes.byteLength);assert.equal(typeof initialMedia.items[0].created_at,'number');assert.ok(!('body' in initialMedia.items[0]));
+ for(let i=0;i<25;i++)sqlite.prepare('INSERT INTO site_media(id,mime,body,created_at) VALUES(?,?,?,?)').run(crypto.randomUUID(),'image/png',uploadedBytes,Date.now()+i);
+ const mediaPage1=await (await media.GET(req('/api/admin/media?page=1'))).json(),mediaPage2=await (await media.GET(req('/api/admin/media?page=2'))).json();assert.equal(mediaPage1.total,26);assert.equal(mediaPage1.items.length,24);assert.equal(mediaPage2.items.length,2);assert.equal(new Set([...mediaPage1.items,...mediaPage2.items].map(x=>x.id)).size,26);
+ const mediaSearch=await (await media.GET(req('/api/admin/media?q='+uploadedId))).json();assert.equal(mediaSearch.total,1);assert.equal(mediaSearch.items[0].id,uploadedId);assert.equal((await (await media.GET(req('/api/admin/media?q=image%2Fwebp'))).json()).total,0);
+ assert.equal((await media.GET(req('/api/admin/media?page=0'))).status,400);assert.equal((await media.GET(req('/api/admin/media?page=1.2'))).status,400);assert.equal((await media.GET(req('/api/admin/media?q='+'a'.repeat(81)))).status,400);
+ console.log('PASS: media authenticated listing, byte metadata without image body, pagination, ID/MIME search, invalid input rejection');
 
  const advanced=load('app/api/analytics/events/route.ts'),report=load('app/api/admin/analytics/route.ts');
  const sid=crypto.randomUUID(),pageId=crypto.randomUUID();
@@ -93,14 +101,58 @@ let cookie='';function req(route,method='GET',data,origin='https://test.local'){
  assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM enquiries WHERE project=?').get(projectId).n,1);
  assert.equal((await submit.POST(req('/api/enquiries','POST',{...inquiry,requestId:crypto.randomUUID(),sharePct:70}))).status,400);
  assert.equal(schema.safeParse({...catalogContent,projects:[catalog,catalog]}).success,false);
- assert.equal(schema.safeParse({...catalogContent,projects:[{...catalog,fullPrice:0}]}).success,false);
- assert.equal((await content.POST(req('/api/admin/content','POST',{action:'save',revision:8,content:{...catalogContent,projects:[{...catalog,slug:'changed-link'}]}}))).status,400);
+ assert.equal(schema.safeParse({...catalogContent,projects:[{...catalog,fullPrice:0}]}).success,true);
+ const {projectReadiness}=load('lib/project-catalog.ts');assert.ok(projectReadiness({...catalog,fullPrice:0}).length>0);
+ assert.equal((await content.POST(req('/api/admin/content','POST',{action:'save',revision:8,content:{...catalogContent,projects:[{...catalog,fullPrice:0}]}}))).status,200);
+ const historyBeforeBlocked=(await (await content.GET(req('/api/admin/content'))).json()).history.length;
+ assert.equal((await content.POST(req('/api/admin/content','POST',{action:'publish',revision:9}))).status,400);
+ const blockedState=await (await content.GET(req('/api/admin/content'))).json();assert.equal(blockedState.state.revision,9);assert.equal(blockedState.history.length,historyBeforeBlocked);assert.equal((await (await publicContent.GET()).json()).projects[0].fullPrice,2000000);
+ assert.equal((await content.POST(req('/api/admin/content','POST',{action:'save',revision:9,content:catalogContent}))).status,200);
+ assert.equal((await content.POST(req('/api/admin/content','POST',{action:'publish',revision:10}))).status,200);
+ assert.equal((await content.POST(req('/api/admin/content','POST',{action:'save',revision:11,content:{...catalogContent,projects:[{...catalog,slug:'changed-link'}]}}))).status,400);
  catalog.hidden=true;
- assert.equal((await content.POST(req('/api/admin/content','POST',{action:'save',revision:8,content:catalogContent}))).status,200);
- assert.equal((await content.POST(req('/api/admin/content','POST',{action:'publish',revision:9}))).status,200);
+ assert.equal((await content.POST(req('/api/admin/content','POST',{action:'save',revision:11,content:catalogContent}))).status,200);
+ assert.equal((await content.POST(req('/api/admin/content','POST',{action:'publish',revision:12}))).status,200);
  assert.equal((await submit.POST(req('/api/enquiries','POST',{...inquiry,requestId:crypto.randomUUID()}))).status,400);
  console.log('PASS: project create/draft/publish; Coming Soon rejection; published price and project Lead; deduplication; remaining limits; duplicate ID/slug; invalid open; immutable URL; hidden project rejection');
- assert.equal((await session.DELETE(req('/api/admin/session','DELETE'))).status,200);assert.equal((await content.GET(req('/api/admin/content'))).status,401);
+ const cms=load('lib/cms-config.ts'),texts={...catalogContent.texts,'คุณเป็นเจ้าของบ้านพัก':{th:'ทดสอบหัวข้อรู้จัก DEAL!',en:'About DEAL! test',zh:'关于 DEAL! 测试'},'DEAL! คืออะไร และทำอะไรให้เจ้าของบ้าน?':{th:'ทดสอบคำถาม FAQ',en:'FAQ test question',zh:'常见问题测试'}};
+ const faqItems=[{id:'qa-faq-1',question:{th:'คำถามทดสอบที่เพิ่มจากหลังบ้าน',en:'Question added in CMS',zh:''},answer:{th:'คำตอบทดสอบจากหลังบ้าน',en:'Answer added in CMS',zh:''}},{id:'qa-faq-2',question:{th:'คำถามที่สอง',en:'',zh:''},answer:{th:'คำตอบที่สอง',en:'',zh:''}}];
+ const editedSite={...catalogContent,faqItems,texts,images:{'/assets/location.webp':uploaded.url},appearance:{accent:'olive',radius:'sharp',textSize:'large'},homeLayout:[...cms.homeSections].reverse().map(id=>({id,visible:id!=='care'}))};
+ assert.equal(schema.safeParse(editedSite).success,true);
+ assert.equal(schema.safeParse({...editedSite,faqItems:[faqItems[0],faqItems[0]]}).success,false);
+ assert.equal(schema.safeParse({...editedSite,faqItems:[{...faqItems[0],question:{...faqItems[0].question,th:' '}}]}).success,false);
+ assert.equal(schema.safeParse({...editedSite,faqItems:[{...faqItems[0],answer:{...faqItems[0].answer,th:''}}]}).success,false);
+ assert.equal(schema.safeParse({...editedSite,faqItems:[]}).success,true);
+ assert.equal(schema.safeParse({...editedSite,faqItems:undefined}).success,true);
+ assert.equal(schema.safeParse({...editedSite,faqItems:[...faqItems].reverse()}).success,true);
+ // The FAQ editor's inferred legacy defaults must match the actual public FAQ list.
+ const legacyFaqFields=cms.cmsSections.find(s=>s.id==='faq').fields.filter(f=>f.key.length>60||f.key.includes('?'));
+ const inferredFaq=[];for(let i=0;i<legacyFaqFields.length;i+=2)inferredFaq.push([legacyFaqFields[i]?.key,legacyFaqFields[i+1]?.key]);
+ const siteTree=ts.createSourceFile('site.tsx',fs.readFileSync(path.join(root,'app/site.tsx'),'utf8'),ts.ScriptTarget.Latest,true,ts.ScriptKind.TSX);let actualFaq=[];
+ function findFaq(node){if(ts.isVariableDeclaration(node)&&node.name.getText(siteTree)==='faqs'&&node.initializer&&ts.isArrayLiteralExpression(node.initializer))actualFaq=node.initializer.elements.map(pair=>pair.elements.map(element=>element.text));ts.forEachChild(node,findFaq)}findFaq(siteTree);assert.equal(actualFaq.length,7);assert.deepEqual(inferredFaq,actualFaq);
+ const {contentChanges}=load('lib/cms-changes.ts'),baseCms=schema.parse({});
+ assert.deepEqual(contentChanges(baseCms,schema.parse({})),[]);
+ const textDiff=contentChanges(baseCms,schema.parse({texts:{'บ้านพักที่คุณ':{th:'หัวข้อใหม่',en:'New title',zh:'新标题'}}}));assert.equal(textDiff.length,1);assert.equal(textDiff[0].label,'ภาพและคำพาดหัวแรก');assert.match(textDiff[0].detail,/th, en, zh/);
+ const imageDiff=contentChanges(baseCms,schema.parse({images:{'/assets/house.webp':uploaded.url}}));assert.equal(imageDiff.length,1);assert.equal(imageDiff[0].label,'ภาพและคำพาดหัวแรก');
+ const layoutDiff=contentChanges(baseCms,schema.parse({homeLayout:editedSite.homeLayout}));assert.equal(layoutDiff.length,1);assert.equal(layoutDiff[0].label,'หน้าแรก');assert.ok(!layoutDiff[0].detail.includes(cms.homeSectionTitles.care));
+ const appearanceDiff=contentChanges(baseCms,schema.parse({appearance:editedSite.appearance}));assert.equal(appearanceDiff.length,1);assert.equal(appearanceDiff[0].label,'รูปแบบเว็บไซต์');
+ const projectDiff=contentChanges(baseCms,schema.parse({projects:[catalog]}));assert.equal(projectDiff.length,2);assert.equal(projectDiff[0].label,catalog.name.th);assert.match(projectDiff[0].detail,/เพิ่มโครงการใหม่/);assert.equal(projectDiff[1].label,'รายการโปรเจกต์');
+ const editedProjectDiff=contentChanges(schema.parse({projects:[catalog]}),schema.parse({projects:[{...catalog,ownedPercent:50}]}));assert.equal(editedProjectDiff.length,1);assert.match(editedProjectDiff[0].detail,/แก้ข้อมูลโครงการ/);
+ const removedProjectDiff=contentChanges(schema.parse({projects:[catalog]}),baseCms);assert.equal(removedProjectDiff.length,2);assert.match(removedProjectDiff[0].detail,/นำโครงการออก/);
+ const faqDiff=contentChanges(baseCms,schema.parse({faqItems}));assert.equal(faqDiff.length,1);assert.equal(faqDiff[0].label,'คำถามที่พบบ่อย');
+ assert.equal(contentChanges(schema.parse({faqItems}),schema.parse({faqItems:[...faqItems].reverse()})).length,1);
+ console.log('PASS: FAQ optional/empty/reorder/duplicate/required Thai validation, seven legacy default pairs, change-review summaries for text/image/layout/appearance/projects/FAQ');
+ assert.equal(schema.safeParse({...editedSite,homeLayout:editedSite.homeLayout.map((row,i)=>i===1?editedSite.homeLayout[0]:row)}).success,false);
+ assert.equal(schema.safeParse({...editedSite,appearance:{...editedSite.appearance,unknown:'unsafe'}}).success,false);
+ assert.equal(schema.safeParse({...editedSite,appearance:{...editedSite.appearance,accent:'neon'}}).success,false);
+ const beforeCms=await (await publicContent.GET()).json();
+ assert.equal((await content.POST(req('/api/admin/content','POST',{action:'save',revision:13,content:editedSite}))).status,200);
+ assert.deepEqual(await (await publicContent.GET()).json(),beforeCms);
+ const savedCms=await (await content.GET(req('/api/admin/content'))).json();assert.deepEqual(JSON.parse(savedCms.state.draft),schema.parse(editedSite));
+ assert.equal((await content.POST(req('/api/admin/content','POST',{action:'publish',revision:14}))).status,200);
+ const publishedCms=await (await publicContent.GET()).json();assert.equal(publishedCms.texts['คุณเป็นเจ้าของบ้านพัก'].th,'ทดสอบหัวข้อรู้จัก DEAL!');assert.equal(publishedCms.texts['DEAL! คืออะไร และทำอะไรให้เจ้าของบ้าน?'].en,'FAQ test question');assert.equal(publishedCms.images['/assets/location.webp'],uploaded.url);assert.deepEqual(publishedCms.appearance,editedSite.appearance);assert.deepEqual(publishedCms.homeLayout,editedSite.homeLayout);assert.equal(publishedCms.projects.length,0);assert.deepEqual(publishedCms.faqItems,faqItems);
+ console.log('PASS: expanded About/FAQ text and image draft/public persistence; appearance; section reorder/visibility; duplicate section and unknown appearance rejection; hidden project excluded from public API');
+ assert.equal((await session.DELETE(req('/api/admin/session','DELETE'))).status,200);assert.equal((await content.GET(req('/api/admin/content'))).status,401);assert.equal((await media.GET(req('/api/admin/media'))).status,401);
  for(let i=0;i<8;i++)await session.POST(req('/api/admin/session','POST',{password:'wrong'}));
  assert.equal((await session.POST(req('/api/admin/session','POST',{password:'wrong'}))).status,429);
  assert.equal((await leads.GET(req('/api/admin/leads'))).status,401);

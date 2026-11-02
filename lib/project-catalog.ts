@@ -6,6 +6,7 @@ export const catalogProjectSchema=z.object({
  status:z.enum(['coming-soon','open','paused','completed']),hidden:z.boolean(),
  image:z.string().max(2048).refine(v=>!v||/^\/assets\/[\w.-]+$/.test(v)||/^\/api\/media\/[a-f0-9-]+$/.test(v)||(()=>{try{return new URL(v).protocol==='https:'}catch{return false}})(),'URL รูปไม่ถูกต้อง'),
  fullPrice:z.number().int().min(0).max(1000000000),minShare:z.number().min(10).max(100).multipleOf(.01),ownedPercent:z.number().min(0).max(100).multipleOf(.01),updated:z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine(v=>!isNaN(Date.parse(v))&&new Date(v).toISOString().slice(0,10)===v),
-}).strict().superRefine((v,c)=>{if(v.status==='open'&&(v.fullPrice<=0||!v.terms.th||100-v.ownedPercent<v.minShare))c.addIssue({code:'custom',message:'เปิดรับต้องมีราคา เงื่อนไข และยอดเหลือไม่น้อยกว่าขั้นต่ำ'});});
+}).strict();
+export function projectReadiness(v:z.infer<typeof catalogProjectSchema>){return v.hidden||v.status!=='open'?[]:[...(v.fullPrice<=0?['ระบุมูลค่าโครงการมากกว่า 0']:[]),...(!v.terms.th?['ระบุสิทธิ ค่าใช้จ่าย และเงื่อนไข']:[]),...(100-v.ownedPercent<v.minShare?['ยอดเหลือต้องไม่น้อยกว่าสัดส่วนขั้นต่ำ']:[])];}
 export type CatalogProject=z.infer<typeof catalogProjectSchema>;
 export const statusLabels={'coming-soon':'Coming Soon!','open':'เปิดให้เป็นเจ้าของ','paused':'พักการเปิดรับ','completed':'ดำเนินงานแล้ว'};

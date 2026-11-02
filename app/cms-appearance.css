@@ -1,0 +1,6 @@
+[data-site-density] .headline-red,[data-site-density] .eyebrow>span,[data-site-density] .ownership-progress-track>span{color:var(--cms-accent)}
+[data-site-density] .ownership-progress-track>span{background:var(--cms-accent)}
+[data-site-density] .headline-red{color:var(--cms-accent)}
+[data-site-radius=sharp] :is(.project-card,.ownership-card,.contact-form,.portfolio-card,.btn,.card-details-button){border-radius:6px}
+[data-site-text-size=large] :is(.hero-description,.about-definition,.care-item-copy p,.catalog-text,.contact-company p){font-size:clamp(17px,1.35vw,22px);line-height:1.75}
+.cms-preview-banner,.cms-load-warning{background:#fff1cb;color:#463c20;padding:9px 18px;text-align:center;font-size:13px;position:relative;z-index:90}.cms-load-warning button{font:inherit;text-decoration:underline;margin-left:12px}

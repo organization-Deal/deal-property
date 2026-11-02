@@ -13,6 +13,7 @@ import './desktop-layout.css';
 import './language.css';
 import './enquiry-form.css';
 import './about.css';
+import './cms-appearance.css';
 export const metadata: Metadata = {
  metadataBase: new URL('https://deal-human-allowed.teechanaphat.chatgpt.site'),
  title: { default: 'DEAL! — บ้านพักที่คุณเป็นเจ้าของ เราดูแลให้', template: '%s | DEAL!' },

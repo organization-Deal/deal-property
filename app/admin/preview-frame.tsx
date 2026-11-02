@@ -1,0 +1,3 @@
+'use client';
+import {useEffect,useRef,useState} from 'react';
+export default function PreviewFrame({path,revision,mode}:{path:string;revision:number;mode:string}){const ref=useRef<HTMLDivElement>(null);const [scale,setScale]=useState(.3);const width=mode==='mobile'?390:1280;useEffect(()=>{const el=ref.current;if(!el)return;const resize=()=>setScale(Math.min(1,el.clientWidth/width));resize();const observer=new ResizeObserver(resize);observer.observe(el);return()=>observer.disconnect()},[width]);return <div className={'cms-preview-frame '+mode} ref={ref}><iframe key={path+revision} src={path} title="ตัวอย่างฉบับร่างเว็บไซต์" loading="lazy" style={{width,height:640/scale,transform:`scale(${scale})`,transformOrigin:'0 0'}}/></div>}
