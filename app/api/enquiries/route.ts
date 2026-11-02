@@ -18,15 +18,22 @@ export async function POST(request: Request) {
  const extra={firstName:firstName||'',lastName:lastName||'',lineId,budget,referralCode,visitTime:data.purpose==='visit'?visitTime:''};
  data.message=`Contact details: ${JSON.stringify(extra)}\n${data.message}`;
  const share=data.ownership==='whole'?100:data.ownership==='co-owner'?(sharePct??10):undefined;
- if(share!==undefined)data.message=`สนใจสัดส่วน ${share}% · จำนวนเงินคำนวณ ${money(ownershipPrice(data.ownership,share))} บาท รวมภาษี\n${data.message}`;
- if(data.ownership==='whole')data.message='สอบถามทางเลือกทั้งหลังเท่านั้น · ยังไม่ยืนยันเปิดรับ 100%\n'+data.message;
- data.message=`Preferred language: ${{th:'Thai',zh:'Chinese (Simplified)',en:'English'}[language]}\n${data.message}`;
  const id=await enquiryReference(requestId??crypto.randomUUID(),data);
  try {
   await ensureDatabase();
   const state=await db().prepare('SELECT published FROM site_content WHERE id=1').first<{published:string}>();
   const current=contentSchema.parse(state?JSON.parse(state.published):{});
-  const remaining=Math.round((100-current.availability.ownedPercent)*100)/100;
+  const project=data.project==='human-allowed-chiang-mai'?null:current.projects.find(p=>p.id===data.project&&!p.hidden);
+  if(data.project!=='human-allowed-chiang-mai'&&(!project||project.status!=='open'))return Response.json({error:'โครงการนี้ยังไม่เปิดรับ กรุณาตรวจสอบสถานะล่าสุด'},{status:400});
+  const fullPrice=project?.fullPrice??1712000;
+  const minimum=project?.minShare??10;
+  if(data.ownership==='co-owner'&&(share??10)<minimum)return Response.json({error:`ขั้นต่ำ ${minimum}%`},{status:400});
+  if(share!==undefined)data.message=`สนใจสัดส่วน ${share}% · จำนวนเงินคำนวณ ${money(Math.round(fullPrice*share)/100)} บาท รวมภาษี\n${data.message}`;
+  if(project)data.message=`โครงการ: ${project.name.th} (${project.slug})\n${data.message}`;
+
+ if(data.ownership==='whole')data.message='สอบถามทางเลือกทั้งหลังเท่านั้น · ยังไม่ยืนยันเปิดรับ 100%\n'+data.message;
+ data.message=`Preferred language: ${{th:'Thai',zh:'Chinese (Simplified)',en:'English'}[language]}\n${data.message}`;
+  const remaining=project?Math.round((100-project.ownedPercent)*100)/100:Math.round((100-current.availability.ownedPercent)*100)/100;
   if(data.ownership==='co-owner' && (share??10)>remaining)return Response.json({error:`สัดส่วนเปิดรับล่าสุดเหลือ ${remaining}% กรุณาปรับสัดส่วนหรือติดต่อทีม`},{status:400});
   await db().prepare('INSERT INTO enquiries(id,name,phone,email,project,ownership,purpose,visit_date,contact_time,message,source,consent_version,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO NOTHING').bind(id,data.name,data.phone,data.email,data.project,data.ownership,data.purpose,data.purpose==='visit'?data.visitDate:'',data.contactTime,data.message,data.source,'enquiry-2026-10-v1',Date.now()).run();
   const saved=await db().prepare('SELECT id FROM enquiries WHERE id=?').bind(id).first();

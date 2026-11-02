@@ -1,11 +1,11 @@
 'use client';
 import {useEffect,useState} from 'react';
 import {useLanguage} from './language';
-import {campaignLabel,publicPaths} from '@/lib/analytics-contract';
+import {campaignLabel,publicPaths,validPublicPath} from '@/lib/analytics-contract';
 type Attribution={source:string;medium:string;campaign:string};
 export function SiteAnalytics(){const {language,localizedHref}=useLanguage();const copy={th:{title:"ช่วยให้ DEAL! ปรับปรุงเว็บได้ตรงใจคุณ",body:"อนุญาตเก็บสถิติการคลิก แหล่งที่มา และพื้นที่โดยประมาณ ไม่เก็บข้อความในฟอร์ม เก็บไม่เกิน 90 วัน",accept:"ยอมรับ",decline:"ไม่ยอมรับ",policy:"รายละเอียดความเป็นส่วนตัว",settings:"ตั้งค่าความเป็นส่วนตัว"},en:{title:"Help us improve your experience",body:"Allow click, campaign and approximate area analytics. No form text is recorded. Retained up to 90 days.",accept:"Accept",decline:"Decline",policy:"Privacy details",settings:"Privacy settings"},zh:{title:"帮助 DEAL! 改善网站体验",body:"允许收集点击、来源和大致地区统计。不记录表单内容，最多保留90天。",accept:"接受",decline:"拒绝",policy:"隐私详情",settings:"隐私设置"}}[language];const [consent,setConsent]=useState<string|null>('pending'),[admin,setAdmin]=useState(true);
 useEffect(()=>{setAdmin(location.pathname.startsWith('/admin')||new URLSearchParams(location.search).has('cms-preview'));try{setConsent(localStorage.getItem('deal-analytics-consent-v2'))}catch{setConsent(null)}},[]);
-useEffect(()=>{if(admin||consent!=='yes'||navigator.doNotTrack==='1')return;const path=location.pathname;if(!(publicPaths as readonly string[]).includes(path))return;
+useEffect(()=>{if(admin||consent!=='yes'||navigator.doNotTrack==='1')return;const path=location.pathname;if(!validPublicPath(path))return;
 const q=new URLSearchParams(location.search);let source='direct';const u=campaignLabel(q.get('utm_source')).toLowerCase();const classify=(v:string)=>/instagram/.test(v)?'instagram':/facebook|^fb$|^meta$/.test(v)?'facebook':/google/.test(v)?'google':/bing/.test(v)?'bing':/tiktok/.test(v)?'tiktok':/line/.test(v)?'line':'referral';
 try{const ref=new URL(document.referrer);if(ref.origin!==location.origin)source=classify(ref.hostname)}catch{}if(u)source=classify(u)==='referral'?'campaign':classify(u);
 let session='',attribution:Attribution={source,medium:campaignLabel(q.get('utm_medium')),campaign:campaignLabel(q.get('utm_campaign'))};

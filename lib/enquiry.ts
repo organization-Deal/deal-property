@@ -13,7 +13,7 @@ export const enquirySchema = z.object({
  name: z.string().trim().min(2, 'กรุณาระบุชื่ออย่างน้อย 2 ตัวอักษร').max(120),
  phone: z.string().transform(v => v.replace(/[\s()-]/g, '')).refine(v => /^(0\d{8,9}|\+\d{8,15})$/.test(v), 'กรุณาตรวจสอบเบอร์โทรศัพท์'),
  email: z.union([z.literal(''), z.string().trim().email('กรุณาตรวจสอบอีเมล').max(200)]).default(''),
- project: z.literal('human-allowed-chiang-mai'), ownership: z.enum(['co-owner','whole','undecided']), purpose: z.enum(['details','visit','plans']),
+ project: z.string().regex(/^(human-allowed-chiang-mai|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/), ownership: z.enum(['co-owner','whole','undecided']), purpose: z.enum(['details','visit','plans']),
  visitDate: z.string().max(10).default(''), contactTime: z.enum(['any','morning','afternoon','evening']), message: z.string().trim().max(1500).default(''),
  source: z.string().max(500).default('website'), consent: z.literal(true), website: z.string().max(0).default(''),
 }).superRefine((v,ctx) => {
