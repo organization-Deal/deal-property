@@ -1,32 +1,20 @@
-ชุดอัปเดตเว็บบ้าน: รวม Lead Admin เดิมและ Analytics v2
-อ่าน docs/ANALYTICS-V2-TH.md ก่อนติดตั้ง
-แตก ZIP แล้วอัปโฟลเดอร์ภายในทับ repository เดิม ไม่ลบไฟล์อื่น
-เข้า /admin > วิเคราะห์ผู้เข้าชม ใช้รหัสเดิม
-ยังไม่ได้อัป GitHub หรือ Deploy ในรอบนี้
-app/admin/admin.css
-app/admin/analytics.tsx
-app/admin/leads.tsx
-app/admin/panel.tsx
-app/api/admin/analytics/route.ts
-app/api/admin/leads/route.ts
-app/api/admin/stats/route.ts
-app/api/analytics/events/route.ts
-app/api/enquiries/route.ts
-app/api/events/route.ts
-app/enquiry-form.tsx
-app/ownership-picker.tsx
-app/site-analytics.tsx
-app/site.tsx
-build/sites-worker.ts
-docs/ADMIN-LEADS-SETUP.md
-docs/ANALYTICS-V2-TH.md
-lib/admin-server.ts
-lib/analytics-contract.ts
-lib/analytics-report.ts
-lib/database-ready.ts
-lib/lead-workflow.ts
-lib/request-geo.ts
-lib/translations.ts
-migrations/20261031_leads.sql
-migrations/20261101_analytics.sql
-tests/admin-integration.cjs
+DEAL! HOUSE ADMIN v3 — 2 November 2026
+ไฟล์อัปเดตสำหรับเว็บบ้านเดิม รวม Lead Admin และ Analytics v2
+แตก ZIP วางทับไฟล์ตามโฟลเดอร์ใน repository เดิม แล้ว Build/Deploy ตามเดิม
+ไม่แก้ Cloudflare config, Database ID, dependencies หรือราคาเดิม
+
+เพิ่มใน /admin > แก้เนื้อหา: สัดส่วนโครงการ Human Allowed Rimping
+กรอกมีเจ้าของแล้ว 0–100% (2 ตำแหน่ง), วันที่ยืนยัน → บันทึกร่าง → พรีวิว → เผยแพร่
+ยอดเหลือคำนวณอัตโนมัติ ใช้ร่วมทั้งสามภาษา การ์ด เครื่องคำนวณ ฟอร์ม และ API
+ผู้สนใจไม่ใช่การจอง จึงไม่หักยอดจาก Lead อัตโนมัติ ต้องอัปเดตหลังทีมยืนยัน
+ราคา สิทธิ ขั้นต่ำ10% Project ID และสถานะ Coming Soon คงเดิม
+ข้อมูลเก่า default40%/วันที่2026-10-11 จนผู้ดูแลเผยแพร่ยอดใหม่
+ใช้ระบบ version conflict และประวัติเผยแพร่เดิม ไม่ต้องเพิ่ม migration สำหรับสัดส่วน
+
+Consent: แสดงภาษาที่เลือก ใช้กล่องไม่บังหน้าจอ ปุ่มยอมรับ/ไม่ยอมรับ กดง่าย
+ไม่มีการยินยอมอัตโนมัติ เคารพคำตอบเดิมและ Do Not Track ไม่เก็บ analytics ก่อนยินยอม
+
+ตรวจ TypeScript, Build และ integration tests ใน SQLite ทดสอบ
+เพิ่มทดสอบ save/publish สัดส่วน, API ปฏิเสธ30%เมื่อเหลือ20%,รับ20%,เปอร์เซ็นต์เกิน100และวันที่ผิด
+ยังไม่ได้ทดสอบ browser/Safari/production D1 และยังไม่ Deploy
+หาก repository มีการแก้ไฟล์หลัง v2 ให้ตรวจ diff ก่อนวางทับ

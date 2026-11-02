@@ -19,7 +19,6 @@ export const enquirySchema = z.object({
 }).superRefine((v,ctx) => {
  if(v.firstName!==undefined&&v.lastName===undefined)ctx.addIssue({code:'custom',path:['lastName'],message:'กรุณาระบุนามสกุล'});
  if(v.lastName!==undefined&&v.firstName===undefined)ctx.addIssue({code:'custom',path:['firstName'],message:'กรุณาระบุชื่อ'});
- if(v.ownership==='co-owner' && v.sharePct !== undefined && v.sharePct > PROJECT.remainingPercent) ctx.addIssue({code:'custom',path:['sharePct'],message:'สัดส่วนที่ระบุมากกว่ายอดเปิดรับ 60% กรุณาเลือกใหม่'});
  if (v.purpose === 'visit') {
   const today = new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok'}).format(new Date());
   const valid = /^\d{4}-\d{2}-\d{2}$/.test(v.visitDate) && !isNaN(Date.parse(v.visitDate)) && new Date(v.visitDate).toISOString().slice(0,10) === v.visitDate;

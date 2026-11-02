@@ -35,7 +35,7 @@ let cookie='';function req(route,method='GET',data,origin='https://test.local'){
  assert.deepEqual(await (await publicContent.GET()).json(),{});
  assert.equal((await content.POST(req('/api/admin/content','POST',{action:'save',revision:0,content:draft}))).status,409);
  assert.equal((await content.POST(req('/api/admin/content','POST',{action:'publish',revision:1}))).status,200);
- assert.deepEqual(await (await publicContent.GET()).json(),draft);
+ assert.deepEqual(await (await publicContent.GET()).json(),load('lib/cms-config.ts').contentSchema.parse(draft));
  assert.equal((await (await content.GET(req('/api/admin/content'))).json()).history.length,1);
  assert.equal((await content.POST(req('/api/admin/content','POST',{action:'publish',revision:1}))).status,409);
  assert.equal((await (await content.GET(req('/api/admin/content'))).json()).history.length,1);
@@ -66,6 +66,17 @@ let cookie='';function req(route,method='GET',data,origin='https://test.local'){
  const {campaignLabel}=load('lib/analytics-contract.ts');assert.equal(campaignLabel('private@example.com'),'');assert.equal(campaignLabel('0800000000'),'');assert.equal(campaignLabel('rimping_nov'),'rimping_nov');
  assert.equal((await advanced.POST(req('/api/analytics/events','POST',{...first,id:crypto.randomUUID(),country:'US'}))).status,400);
  const geo=load('lib/request-geo.ts');assert.equal(geo.requestGeo(req('/')).country,'');
+ const next={...draft,availability:{ownedPercent:80,updated:'2026-11-02'}};
+ assert.equal((await content.POST(req('/api/admin/content','POST',{action:'save',revision:2,content:next}))).status,200);
+ assert.equal((await publicContent.GET()).status,200);
+ assert.equal((await content.POST(req('/api/admin/content','POST',{action:'publish',revision:3}))).status,200);
+ assert.equal((await (await publicContent.GET()).json()).availability.ownedPercent,80);
+ assert.equal((await submit.POST(req('/api/enquiries','POST',{...payload,requestId:crypto.randomUUID(),sharePct:30}))).status,400);
+ assert.equal((await submit.POST(req('/api/enquiries','POST',{...payload,requestId:crypto.randomUUID(),sharePct:20}))).status,201);
+ const schema=load('lib/cms-config.ts').contentSchema;
+ assert.equal(schema.safeParse({...next,availability:{ownedPercent:101,updated:'2026-11-02'}}).success,false);
+ assert.equal(schema.safeParse({...next,availability:{ownedPercent:80,updated:'2026-02-30'}}).success,false);
+ console.log('PASS: availability save/publish, limits on actual lead endpoint, invalid percentage/date rejection');
  assert.equal((await session.DELETE(req('/api/admin/session','DELETE'))).status,200);assert.equal((await content.GET(req('/api/admin/content'))).status,401);
  for(let i=0;i<8;i++)await session.POST(req('/api/admin/session','POST',{password:'wrong'}));
  assert.equal((await session.POST(req('/api/admin/session','POST',{password:'wrong'}))).status,429);

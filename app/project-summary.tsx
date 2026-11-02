@@ -1,13 +1,15 @@
 'use client';
+import {useAvailability} from './site-content';
 import { useLanguage } from "./language";
 import { ArrowRight, Check, MapPin, House, KeyRound, Receipt } from 'lucide-react';
 import { PROJECT, money } from '../lib/project';
 import { OwnershipProgress } from './project-availability';
 export function ProjectSummary() {
+    const availability=useAvailability();
     const { translate, localizedHref } = useLanguage();
     return <section id="overview" className="project-summary container" aria-label={translate("สรุปโครงการ")}>
     <div className="summary-panel">
-    <div className="summary-status"><span className="status-label"><span />{translate("เปิดรับผู้สนใจเป็นเจ้าของ")}</span><small>{translate("ข้อมูลโครงการ ")}<time dateTime={PROJECT.updated}>{translate(PROJECT.updatedLabel)}</time></small></div>
+    <div className="summary-status"><span className="status-label"><span />{translate("เปิดรับผู้สนใจเป็นเจ้าของ")}</span><small>{translate("ข้อมูลโครงการ ")}<time dateTime={availability.updated}>{translate(availability.updatedLabel)}</time></small></div>
     <div className="summary-price"><div><span>{translate("เจ้าของร่วม 10% \u00B7 รวมภาษี")}</span><strong>{translate(money(PROJECT.startingPrice))} <small>{translate("บาท")}</small></strong></div><div><span>{translate("มูลค่าทั้งหลัง \u00B7 ฐานคำนวณ")}</span><strong>{translate(money(PROJECT.fullPrice))} <small>{translate("บาท")}</small></strong></div><a href={localizedHref("#ownership")} className="btn btn-outline">{translate("เลือกสัดส่วนและดูราคา ")}<ArrowRight size={17}/></a></div>
     <dl className="summary-facts"><div><dt><MapPin size={16} aria-hidden="true"/>{translate("ทำเล")}</dt><dd>{translate("เมืองเชียงใหม่ \u00B7 ใกล้แม่น้ำปิง")}</dd></div><div><dt><House size={16} aria-hidden="true"/>{translate("แบบบ้าน")}</dt><dd>{translate("2 ชั้น \u00B7 2 ห้องนอน \u00B7 2 ห้องน้ำ")}</dd></div><div><dt><KeyRound size={16} aria-hidden="true"/>{translate("การถือครอง")}</dt><dd>{translate("สิทธิในตัวบ้านบนที่ดินเช่า")}</dd></div><div><dt><Receipt size={16} aria-hidden="true"/>{translate("ค่าบริหาร")}</dt><dd>{translate("30% ของรายได้รวม")}</dd></div></dl>
     <p className="summary-footnote">{translate("ไม่รวมกรรมสิทธิ์ที่ดิน \u00B7 มีค่าใช้จ่ายดำเนินงานแยกต่างหาก \u00B7 ตรวจสอบสัดส่วนที่เปิดรับกับทีม")}</p>

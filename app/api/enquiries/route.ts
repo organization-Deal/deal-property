@@ -1,3 +1,4 @@
+import {contentSchema} from '@/lib/cms-config';
 import { ensureDatabase } from '@/lib/database-ready';
 import { db } from '@/lib/admin-server';
 import { enquirySchema } from '@/lib/enquiry';
@@ -23,6 +24,10 @@ export async function POST(request: Request) {
  const id=await enquiryReference(requestId??crypto.randomUUID(),data);
  try {
   await ensureDatabase();
+  const state=await db().prepare('SELECT published FROM site_content WHERE id=1').first<{published:string}>();
+  const current=contentSchema.parse(state?JSON.parse(state.published):{});
+  const remaining=Math.round((100-current.availability.ownedPercent)*100)/100;
+  if(data.ownership==='co-owner' && (share??10)>remaining)return Response.json({error:`สัดส่วนเปิดรับล่าสุดเหลือ ${remaining}% กรุณาปรับสัดส่วนหรือติดต่อทีม`},{status:400});
   await db().prepare('INSERT INTO enquiries(id,name,phone,email,project,ownership,purpose,visit_date,contact_time,message,source,consent_version,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO NOTHING').bind(id,data.name,data.phone,data.email,data.project,data.ownership,data.purpose,data.purpose==='visit'?data.visitDate:'',data.contactTime,data.message,data.source,'enquiry-2026-10-v1',Date.now()).run();
   const saved=await db().prepare('SELECT id FROM enquiries WHERE id=?').bind(id).first();
   if(!saved)throw new Error('Persistence verification failed');

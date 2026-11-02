@@ -1,14 +1,16 @@
 'use client';
+import {useAvailability} from './site-content';
 import { useLanguage } from "./language";
 import { LockKeyhole } from 'lucide-react';
 import { PROJECT } from '../lib/project';
 export function OwnershipProgress() {
+    const availability=useAvailability();
     const { translate, localizedHref } = useLanguage();
-    const owned = 100 - PROJECT.remainingPercent;
+    const owned = 100 - availability.remainingPercent;
     return <div className="ownership-progress">
-  <div className="ownership-progress-labels"><span>{translate("มีเจ้าของแล้ว ")}<strong>{translate(owned)}{translate("%")}</strong></span><span>{translate("เหลือเปิดรับ ")}<strong>{translate(PROJECT.remainingPercent)}{translate("%")}</strong></span></div>
-  <div className="ownership-progress-track" role="progressbar" aria-label={translate("สัดส่วนที่มีเจ้าของแล้ว")} aria-valuemin={0} aria-valuemax={100} aria-valuenow={owned} aria-valuetext={translate(`มีเจ้าของแล้ว ${owned}% เหลือเปิดรับ ${PROJECT.remainingPercent}%`)}><span style={{ width: `${owned}%` }}/></div>
-  <p>{translate("สถานะ ณ ")}<time dateTime={PROJECT.updated}>{translate(PROJECT.updatedLabel)}</time>{translate(" \u00B7 ยืนยันสัดส่วนล่าสุดกับทีม")}</p>
+  <div className="ownership-progress-labels"><span>{translate("มีเจ้าของแล้ว ")}<strong>{translate(owned)}{translate("%")}</strong></span><span>{translate("เหลือเปิดรับ ")}<strong>{translate(availability.remainingPercent)}{translate("%")}</strong></span></div>
+  <div className="ownership-progress-track" role="progressbar" aria-label={translate("สัดส่วนที่มีเจ้าของแล้ว")} aria-valuemin={0} aria-valuemax={100} aria-valuenow={owned} aria-valuetext={translate(`มีเจ้าของแล้ว ${owned}% เหลือเปิดรับ ${availability.remainingPercent}%`)}><span style={{ width: `${owned}%` }}/></div>
+  <p>{translate("สถานะ ณ ")}<time dateTime={availability.updated}>{translate(availability.updatedLabel)}</time>{translate(" \u00B7 ยืนยันสัดส่วนล่าสุดกับทีม")}</p>
  </div>;
 }
 export function ComingSoonCard() {
